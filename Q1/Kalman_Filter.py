@@ -40,7 +40,52 @@ class KalmanFilter():
   
     
 def simulate_filter(filter_obj,num_iters):
-    pass
+    x_state = []
+    y_state = []
+    x_obs = []
+    y_obs = []
+    x_estimated = []
+    y_estimated = []
+    
+    x_t = filter_obj.agent.getState()
+    z_t = filter_obj.agent.get_observation()
+    x_cap_t = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief),filter_obj.covar_belief)
+    
+    x_state.append(x_t[0][0])
+    y_state.append(x_t[1][0])
+    x_obs.append(z_t[0][0])
+    y_obs.append(z_t[1][0])
+    x_estimated.append(x_cap_t[0])
+    y_estimated.append(x_cap_t[1])
+    
+    
+    basic_arr = np.arange(0,num_iters,1)
+    delta_vel_x = np.sin(basic_arr)
+    delta_vel_y = np.cos(basic_arr)
+      
+    for i in range(num_iters):
+        u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T
+        filter_obj.updateBelief(u_t)
+        
+        x_t = filter_obj.agent.getState()
+        z_t = filter_obj.agent.get_observation()
+        x_cap_t = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief),filter_obj.covar_belief)
+        
+        x_state.append(x_t[0][0])
+        y_state.append(x_t[1][0])
+        x_obs.append(z_t[0][0])
+        y_obs.append(z_t[1][0])
+        x_estimated.append(x_cap_t[0])
+        y_estimated.append(x_cap_t[1])
+        
+    plt.title("Simulation")
+    plt.xlabel("X coordinate")
+    plt.ylabel("Y coordinate")
+    plt.plot(x_state, y_state, label = "Actual Trajectory")
+    plt.plot(x_obs, y_obs, label = "Observed Trajectory")
+    plt.plot(x_estimated,y_estimated, label="Estimated Trajectory")
+    plt.legend()
+    plt.show()
     
 if __name__ == "__main__":
     
@@ -54,7 +99,8 @@ if __name__ == "__main__":
     Q_t = np.array([[100,0],[0,100]]) 
     
     mean_belief_0 = np.array([[0,0,0,0]]).T
-    covar_belief_0 = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,0,1e-4],[0,0,0,1e-4]])
+    covar_belief_0 = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
+    simulate_filter(estimator,200)
