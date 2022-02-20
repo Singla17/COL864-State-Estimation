@@ -57,7 +57,7 @@ class KalmanFilter():
             self.mean_belief = mu_bar_t
             self.covar_belief_t = sigma_bar_t
         
-        self.agent.updateState(u_t)
+        
         
         return (self.mean_belief,self.covar_belief)
     
@@ -114,6 +114,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
       
     for i in range(num_iters):
         u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T
+        filter_obj.agent.updateState(u_t)
         filter_obj.updateBelief(u_t,filter_obj.agent.get_observation(),not (i in absence_of_observations))
         
         x_t = filter_obj.agent.getState()
