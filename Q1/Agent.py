@@ -23,20 +23,23 @@ class aeroplane():
         
     def getState(self):
         """
-        Returns np_array
-        -------
-        self.state    
-            current state of the model
+        Returns current state of the model as np_array
         """
         return self.state
     
     def updateState(self,u_t):
+        """
+        Update state of the model
+        """
         mu_noise = np.zeros((np.shape(self.R_t)[0],))
         next_state = np.matmul(self.A_t,self.state) + np.matmul(self.B_t,u_t) + np.expand_dims(np.random.multivariate_normal(mu_noise,self.R_t),1)
         self.state = next_state
         return next_state
     
     def get_observation(self):
+        """
+        Returns z_t as numpy array
+        """
         mu_noise = np.zeros((np.shape(self.Q_t)[0],))
         observation = np.matmul(self.C_t,self.state) + np.expand_dims(np.random.multivariate_normal(mu_noise,self.Q_t),1)
         return observation

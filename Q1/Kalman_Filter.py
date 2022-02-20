@@ -21,20 +21,38 @@ class KalmanFilter():
         self.mean_belief = mean_belief_0
         self.covar_belief = covar_belief_0
         
-        
-    def updateBelief(self,u_t,measurement_update=True):
-        
+    def action_update(self,u_t):
+        """
+        Returns updated belief(mean_belief, covar_belief) by incorpoating action u_t
+        """
         mu_bar_t = np.matmul(self.agent.A_t,self.mean_belief) + np.matmul(self.agent.B_t,u_t)
-        sigma_bar_t = np.matmul(np.matmul(self.agent.A_t,self.covar_belief),self.agent.A_t.T) + self.agent.R_t
+        sigma_bar_t = np.matmul(np.matmul(self.agent.A_t,self.covar_belief),self.agent.A_t.T) + self.agent.R_t   
+        return (mu_bar_t,sigma_bar_t)
+    
+    def measurement_update(self,mu_bar_t,sigma_bar_t,z_t):
+        """
+        Returns updated belief(mean_belief, covar_belief) by introducing measurement z_t
+        """
+        intermediate_var = np.matmul(np.matmul(self.agent.C_t,sigma_bar_t),self.agent.C_t.T) + self.agent.Q_t ## see Kalman Algo
+        K_t = np.matmul(np.matmul(sigma_bar_t,self.agent.C_t.T),np.linalg.inv(intermediate_var))
+        mean_belief = mu_bar_t + np.matmul(K_t,z_t-np.matmul(self.agent.C_t,mu_bar_t))
+        intermediate_var_2 = np.matmul(K_t,self.agent.C_t)
+        intermediate_var_3 = np.identity(np.shape(intermediate_var_2)[0])-intermediate_var_2
+        covar_belief = np.matmul(intermediate_var_3,sigma_bar_t)
+        return mean_belief, covar_belief    
+    
+    
+    def updateBelief(self,u_t,z_t,measurement_update=True):
+        """
+        Updates state's distribution by updating mean and covariance values
+        u_t: Action at time t (np_array)
+        z_t:np_array denoting measurement at time t
+        measurement_update:boolean (tells if Measurement is given or not)
+        """
         
+        mu_bar_t,sigma_bar_t =self.action_update(u_t)
         if measurement_update:
-            intermediate_var = np.matmul(np.matmul(self.agent.C_t,sigma_bar_t),self.agent.C_t.T) + self.agent.Q_t ## see Kalman Algo
-            K_t = np.matmul(np.matmul(sigma_bar_t,self.agent.C_t.T),np.linalg.inv(intermediate_var))
-            self.mean_belief = mu_bar_t + np.matmul(K_t,self.agent.get_observation()-np.matmul(self.agent.C_t,mu_bar_t))
-            intermediate_var_2 = np.matmul(K_t,self.agent.C_t)
-            intermediate_var_3 = np.identity(np.shape(intermediate_var_2)[0])-intermediate_var_2
-            self.covar_belief = np.matmul(intermediate_var_3,sigma_bar_t)
-            
+            self.mean_belief,self.covar_belief=self.measurement_update(mu_bar_t,sigma_bar_t,z_t)   
         else:
             self.mean_belief = mu_bar_t
             self.covar_belief_t = sigma_bar_t
@@ -44,11 +62,16 @@ class KalmanFilter():
         return (self.mean_belief,self.covar_belief)
     
     def getBelief(self):
-       
+        """
+        Returns mean and covariance(np_arrays)
+        """
         return (self.mean_belief,self.covar_belief)
   
     
 def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[]):
+    """
+    Simulates Kalman Filter for a given agent with initial state
+    """
     x_state = []
     y_state = []
     x_obs = []
@@ -91,7 +114,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
       
     for i in range(num_iters):
         u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T
-        filter_obj.updateBelief(u_t,not (i in absence_of_observations))
+        filter_obj.updateBelief(u_t,filter_obj.agent.get_observation(),not (i in absence_of_observations))
         
         x_t = filter_obj.agent.getState()
         z_t = filter_obj.agent.get_observation()
@@ -137,5 +160,5 @@ if __name__ == "__main__":
     
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
-    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[10,60],loss_durations=[20,20])
+    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[],loss_durations=[])
     
