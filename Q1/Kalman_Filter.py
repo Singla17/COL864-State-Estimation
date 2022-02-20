@@ -7,7 +7,7 @@ Created on Sat Feb 19 15:20:00 2022
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Simulation_Model import aeroplane
+from Agent import aeroplane
 from utils import confidence_ellipse
 
 DELTA_T = 0.1
