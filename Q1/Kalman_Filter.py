@@ -81,7 +81,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     
     x_t = filter_obj.agent.getState()
     z_t = filter_obj.agent.get_observation()
-    x_cap_t = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief),filter_obj.covar_belief)
+    x_cap_t = filter_obj.mean_belief
     
     fig, ax = plt.subplots()
     
@@ -93,8 +93,8 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     y_state.append(x_t[1][0])
     x_obs.append(z_t[0][0])
     y_obs.append(z_t[1][0])
-    x_estimated.append(x_cap_t[0])
-    y_estimated.append(x_cap_t[1])
+    x_estimated.append(x_cap_t[0][0])
+    y_estimated.append(x_cap_t[1][0])
     
     
     basic_arr = np.arange(0,num_iters,1)
@@ -118,7 +118,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
         
         x_t = filter_obj.agent.getState()
         z_t = filter_obj.agent.get_observation()
-        x_cap_t = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief),filter_obj.covar_belief)
+        x_cap_t = filter_obj.mean_belief
         
         if uncertainity_ellipse:
             x_ellipse, y_ellipse,_,_ = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief), filter_obj.covar_belief, NUM_SAMPLES_ELLIPSE).T
@@ -128,9 +128,9 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
         y_state.append(x_t[1][0])
         x_obs.append(z_t[0][0])
         y_obs.append(z_t[1][0])
-        x_estimated.append(x_cap_t[0])
-        y_estimated.append(x_cap_t[1])
-        
+        x_estimated.append(x_cap_t[0][0])
+        y_estimated.append(x_cap_t[1][0])
+     
     ax.set_title("Simulation")
     
     ax.plot(x_state, y_state, label = "Actual Trajectory")
@@ -160,5 +160,5 @@ if __name__ == "__main__":
     
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
-    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[],loss_durations=[])
+    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[10,60],loss_durations=[20,20])
     
