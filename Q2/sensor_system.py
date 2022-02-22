@@ -6,13 +6,13 @@ Created on Tue Feb 22 12:44:45 2022
 """
 
 import math
-
+import numpy as np
 class sensors:
     
-    def __init__(self,landmarks,radius):
+    def __init__(self,landmarks,radius,var_dt):
         self.landmarks = landmarks
         self.radius = radius
-        
+        self.var_dt=var_dt
     def getRadius(self):
         return self.radius
     
@@ -45,6 +45,7 @@ class sensors:
             if sensor_index == -1:
                 return None
             else:
+                nearest_dist+=np.random.normal(0,self.var_dt)
                 return (self.landmarks[sensor_index], nearest_dist)
             
             
