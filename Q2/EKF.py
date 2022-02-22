@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import sys,os
+from sensor_system import sensors
+from Agent import aeroplane
+
+# from Agent import aeroplane
 # from Agent import aeroplane
 # from utils import confidence_ellipse
 
@@ -10,7 +15,12 @@ NUM_SAMPLES_ELLIPSE = 5000
 class ExtendedKalmanFilter():
     
     def __init__(self,agent,sensor_system,mean_belief_0,covar_belief_0):
-        
+        """Returns Extended Kalman Filter which can track agent
+        agent: Agent object to be tracked needs to have getState function and specific covariance of noise 
+        sensor_system: Object of type sensors
+        mean_belief:mean for initial state
+        covar_belief: covariance for initial state  
+        """
         self.agent = agent
         self.sen_sys=sensor_system
         self.mean_belief = mean_belief_0
@@ -100,3 +110,5 @@ class ExtendedKalmanFilter():
         """
         return (self.mean_belief,self.covar_belief)
   
+if __name__ == "__main__":
+    pass

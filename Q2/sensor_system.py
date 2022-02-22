@@ -10,20 +10,37 @@ import numpy as np
 class sensors:
     
     def __init__(self,landmarks,radius,var_dt):
+        """
+        Returns a sensor system object
+        landmarks:list of locations of landmarks in form of list of numpy 2x1 array
+        radius: radius of the sensor as an int/float
+        var_dt: variance of zero mean gaussian noise to be added in distance 
+        """
         self.landmarks = landmarks
         self.radius = radius
         self.var_dt=var_dt
     def getRadius(self):
+        """
+        Returns radius of sensor
+        """
         return self.radius
     
     def getLandmarks(self):
+        """
+        Returns list of landmarks in form of list of numpy 2x1 arrays (x,y)
+        """
         return self.landmarks
     
     def getLandmark(self,index):
+        """
+        Returns specific landmark position as a numpy 2x1 array
+        """
         return self.landmarks[index]
     
     def getObservation(self,location):
-        
+        """
+        Returns tuple of landmark position and euclidean distance if in radius else None 
+        """
         nearest_dist = self.radius+1
         sensor_index = -1 
         
