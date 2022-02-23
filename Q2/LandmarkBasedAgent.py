@@ -136,4 +136,7 @@ if __name__ == '__main__':
     covar_belief_0 = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     landmarks=[np.array([0,0])[:,np.newaxis],np.array([100,100])[:,np.newaxis],np.array([-100,100])[:,np.newaxis],np.array([100,-100])[:,np.newaxis],np.array([-100,-100])[:,np.newaxis]]
     aero_obj = modAeroplane(init_state,A_t,B_t,C_t,R_t,Q_t,landmarks,30,1) 
+    for i in range(5):
+        aero_obj.updateState(np.zeros((2,1)))
+        print(aero_obj.getState())
     
