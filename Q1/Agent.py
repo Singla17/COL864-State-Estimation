@@ -38,7 +38,7 @@ class aeroplane():
     
     def get_observation(self):
         """
-        Returns z_t as numpy array
+        Returns z_t from GPS sensor as numpy array
         """
         mu_noise = np.zeros((np.shape(self.Q_t)[0],))
         observation = np.matmul(self.C_t,self.state) + np.expand_dims(np.random.multivariate_normal(mu_noise,self.Q_t),1)
