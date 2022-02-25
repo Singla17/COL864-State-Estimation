@@ -128,7 +128,7 @@ class Grid():
             
         return NO_OBS_DIST
     
-    def checkfeasible(self,position):
+    def isfeasible(self,position):
         """
         Checks if the move to variable position is feasible
         """
