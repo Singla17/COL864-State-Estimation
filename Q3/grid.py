@@ -16,8 +16,9 @@ def visualise(grid):
     """
         
     fig, ax = plt.subplots()
-    plt.xlim(0,grid.length)
-    plt.ylim(0,grid.breadth)
+    plt.xlim(-0.5,grid.length-0.5)
+    plt.ylim(-0.5,grid.breadth-0.5)
+    # plt.axis(False)
     
     for i in range (grid.length):
         for j in range(grid.breadth):
@@ -25,13 +26,13 @@ def visualise(grid):
             point = (i,j)
             
             if point in grid.obstacles:
-                ax.add_patch( Rectangle((i,j),
+                ax.add_patch( Rectangle((i-0.5,j-0.5),
                         1, 1,
                         fc ='gray', 
                         ec ='black',
                         lw = None) )
             else:
-                ax.add_patch( Rectangle((i,j),
+                ax.add_patch( Rectangle((i-0.5,j-0.5),
                         1, 1,
                         fc ='none', 
                         ec ='black',
@@ -47,13 +48,21 @@ class Grid():
     obstacles is a list of tuples
     """
     
-    def __init__(self,Length,Breadth,obstacles):
+    def __init__(self,Length,Breadth,obstacles,add_walls=True):
         """
         Initialisation of grid and obstacles
         """
         self.length= Length
         self.breadth = Breadth
         self.obstacles = obstacles
+        if add_walls:
+            for x in range((self.breadth)):
+                self.obstacles.append((x,0))
+                self.obstacles.append((x,self.length-1))
+            for y in range((self.length)):
+                self.obstacles.append((0,y))
+                self.obstacles.append((self.breadth-1,y))
+                
         self.grid = np.zeros((self.length,self.breadth),dtype=int)
         
         for obstacle in self.obstacles:
