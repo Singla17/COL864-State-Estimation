@@ -56,18 +56,18 @@ class Grid():
         self.breadth = Breadth
         self.obstacles = obstacles
         if add_walls:
-            for x in range((self.breadth)):
+            for x in range((self.length)):
                 self.obstacles.append((x,0))
-                self.obstacles.append((x,self.length-1))
-            for y in range((self.length)):
+                self.obstacles.append((x,self.breadth-1))
+            for y in range((self.breadth)):
                 self.obstacles.append((0,y))
-                self.obstacles.append((self.breadth-1,y))
+                self.obstacles.append((self.length-1,y))
                 
         self.grid = np.zeros((self.length,self.breadth),dtype=int)
         
         for obstacle in self.obstacles:
             (x,y) = obstacle
-            assert x< self.length and y<self.breadth, "some obstacles out of grid range"
+            assert x< self.length and y<self.breadth, f" Obstacles ({x},{y}) out of grid range {self.length},{self.breadth}"
             self.grid[x][y] = 1
         
         self.grid = self.grid.T ## so as to emulate the real grid properly
@@ -139,7 +139,7 @@ class Grid():
     
         
 if __name__ =="__main__":
-    grid_obj = Grid(5,5,[(0,0),(4,4),(3,3),(3,4)])
+    grid_obj = Grid(6,5,[(0,0),(4,4),(3,3),(3,4)])
     visualise(grid_obj)
     print(grid_obj.obsDistance_N((4,0)))
     print(grid_obj.obsDistance_S((1,3)))
