@@ -7,8 +7,7 @@ Created on Sat Feb 19 15:20:00 2022
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Agent import aeroplane
-from utils import confidence_ellipse
+
 
 DELTA_T = 0.1
 NUM_SAMPLES_ELLIPSE = 5000
@@ -29,10 +28,12 @@ class KalmanFilter():
         sigma_bar_t = np.matmul(np.matmul(self.agent.A_t,self.covar_belief),self.agent.A_t.T) + self.agent.R_t   
         return (mu_bar_t,sigma_bar_t)
     
-    def measurement_update(self,mu_bar_t,sigma_bar_t,z_t):
+    def measurement_update(self,mu_bar_t,sigma_bar_t,z_t=None):
         """
         Returns updated belief(mean_belief, covar_belief) by introducing measurement z_t
         """
+        if z_t is None:
+            z_t=self.agent.get_observation()
         intermediate_var = np.matmul(np.matmul(self.agent.C_t,sigma_bar_t),self.agent.C_t.T) + self.agent.Q_t ## see Kalman Algo
         K_t = np.matmul(np.matmul(sigma_bar_t,self.agent.C_t.T),np.linalg.inv(intermediate_var))
         mean_belief = mu_bar_t + np.matmul(K_t,z_t-np.matmul(self.agent.C_t,mu_bar_t))
@@ -42,7 +43,7 @@ class KalmanFilter():
         return mean_belief, covar_belief    
     
     
-    def updateBelief(self,u_t,z_t,measurement_update=True):
+    def updateBelief(self,u_t,measurement_update=True):
         """
         Updates state's distribution by updating mean and covariance values
         u_t: Action at time t (np_array)
@@ -52,7 +53,7 @@ class KalmanFilter():
         
         mu_bar_t,sigma_bar_t =self.action_update(u_t)
         if measurement_update:
-            self.mean_belief,self.covar_belief=self.measurement_update(mu_bar_t,sigma_bar_t,z_t)   
+            self.mean_belief,self.covar_belief=self.measurement_update(mu_bar_t,sigma_bar_t)   
         else:
             self.mean_belief = mu_bar_t
             self.covar_belief_t = sigma_bar_t
@@ -115,7 +116,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     for i in range(num_iters):
         u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T
         filter_obj.agent.updateState(u_t)
-        filter_obj.updateBelief(u_t,filter_obj.agent.get_observation(),not (i in absence_of_observations))
+        filter_obj.updateBelief(u_t,not (i in absence_of_observations))
         
         x_t = filter_obj.agent.getState()
         z_t = filter_obj.agent.get_observation()
@@ -146,7 +147,8 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     plt.show()
     
 if __name__ == "__main__":
-    
+    from Agent import aeroplane    
+    from utils import confidence_ellipse    
     np.random.seed(0)
     
     init_state = np.array([[0,0,10,10]]).T
@@ -162,4 +164,4 @@ if __name__ == "__main__":
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
     simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[10,60],loss_durations=[20,20])
-    
+
