@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Feb 24 15:55:43 2022
-
-@author: Somanshu
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
