@@ -93,17 +93,53 @@ class HMM:
         return estimated_state
 
 
+def viterbi(timesteps,hmm,obs,initial_state):
+    all_states=hmm.all_states
+    
+    dp={}
+    for state in all_states:
+        dp[(state,0)]=0,None
+    dp[(initial_state,0)]=hmm.sensorModel(obs[0],initial_state),None
+    # print(dp)
+    for k in range(1,timesteps+1):
+        for state in all_states:
+            #compute dp[(state,k)]
+            dp[(state,k)]=0,None
+            for prev_state in all_states:
+                # print(type(obs),type(prev_state),type(hmm))
+                prob_prev_state=hmm.sensorModel(obs[k],state)*hmm.processModel(state,prev_state)*(dp[(prev_state,k-1)][0])
+                if prob_prev_state > dp[(state,k)][0]:
+                    dp[(state,k)]=prob_prev_state,prev_state
+    
+    estimated_path=[]
+    for k in range(timesteps,0,-1):
+        #choose estimated state at k
+        estimated_state=all_states[0]
+        for state in all_states:
+            if dp[estimated_state,k][0] <dp[(state,k)][0]:
+                estimated_state=state
+        estimated_path.append(estimated_state)
+    estimated_path.append(initial_state)
+    return estimated_path[::-1]
 if __name__ == '__main__':
     g=Grid(9,5,[(3,1),(3,2),(4,1),(4,2)])
-    visualise(g)
+    # visualise(g)
     init_state=(1,3)
     robo=Robot(init_state,5,g)
     filt_obj=HMM(robo)
+    obs=[]
+    
+    observation=robo.getObservation()
+    obs.append(observation)        
+        
     for t in range(25):
+
         robo.updateState()
-        observation=robo.getObservation()        
+        observation=robo.getObservation()
+        obs.append(observation)        
         part_belief=filt_obj.dynamicsUpdate()
         filt_obj.measurementUpdate(part_belief,observation)
     print(robo.path)
     print(filt_obj.getStateEstimate())
+    print(viterbi(25,filt_obj,obs,init_state))
 
