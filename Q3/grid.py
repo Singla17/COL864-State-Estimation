@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-
+import math
 NO_OBS_DIST = 1e6
 
-def visualise(grid):
+def visualise(grid,path=[]):
     """
     This functions renders the grid plot, where obstacles are shown in gray
+    path : list of tuples (x,y) expressing path taken by robot
     """
         
     fig, ax = plt.subplots()
@@ -20,21 +21,49 @@ def visualise(grid):
             point = (i,j)
             
             if point in grid.obstacles:
-                ax.add_patch( Rectangle((i-0.5,j-0.5),
+                ax.add_patch(Rectangle((i-0.5,j-0.5),
                         1, 1,
                         fc ='gray', 
                         ec ='black',
-                        lw = None) )
+                        lw = None))
             else:
-                ax.add_patch( Rectangle((i-0.5,j-0.5),
+                ax.add_patch(Rectangle((i-0.5,j-0.5),
                         1, 1,
                         fc ='none', 
                         ec ='black',
-                        lw = None) )
-                
+                        lw = None))
+    circles=[]
+    if path:
+        for pos in path:
+            x,y=pos
+            circles.append(plt.Circle((x,y), 0.25))
+        for circle in circles:
+            ax.add_artist(circle)
+        for i in range(len(path)-1):
+            prev_pos,pos=path[i],path[i+1]
+            x_pts=[prev_pos[0],pos[0]]
+            y_pts=[prev_pos[1],pos[1]]
+            plt.plot(x_pts,y_pts,color='b')
+
+    
+
     plt.show()
         
         
+def show_belief(grid,belief):
+    fig, ax = plt.subplots()
+    plt.style.use('grayscale')
+    plt.xlim(-0.5,grid.length-0.5)
+    plt.ylim(-0.5,grid.breadth-0.5)
+    # plt.axis(False)
+    log_likelihood=np.zeros((grid.breadth,grid.length))
+    for pos,prob in belief.items():
+        x,y=pos
+        log_likelihood[y,x]=(prob)*255
+
+    ax.imshow(log_likelihood)  
+
+    plt.show()
 
 class Grid():
     """
@@ -42,7 +71,7 @@ class Grid():
     obstacles is a list of tuples
     """
     
-    def __init__(self,Length,Breadth,obstacles,add_walls=True):
+    def __init__(self,Length,Breadth,obstacles,add_walls=False):
         """
         Initialisation of grid and obstacles
         """
@@ -126,7 +155,8 @@ class Grid():
         """
         Checks if the move to variable position is feasible
         """
-        if position not in self.obstacles:
+        x,y=position
+        if position not in self.obstacles and x>=0 and y>=0 and x<self.length and y<self.breadth:
             return True
         else:
             return False

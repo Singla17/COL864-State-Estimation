@@ -29,7 +29,7 @@ class Robot:
             cand_x=x+vec[0]
             cand_y=y+vec[1]
             cand_pos=(cand_x,cand_y)
-            if(self.grid.isfeasible(cand_pos)):
+            if(self.grid.isfeasible(cand_pos) ):
                 possible_pos.append(cand_pos)
         # print(possible_pos)
         if  possible_pos is None:
@@ -45,6 +45,7 @@ class Robot:
         whether  a wall is close (1) or far(0) 
         """
         pos=self.state
+        # print(pos)
         dist_N=self.grid.obsDistance_N(pos)
         dist_S=self.grid.obsDistance_S(pos)
         dist_W=self.grid.obsDistance_W(pos)

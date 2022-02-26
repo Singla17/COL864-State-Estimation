@@ -1,7 +1,7 @@
 from hashlib import shake_128
 import numpy as np
 from Robot import Robot,DIR_VECS
-from grid import Grid,visualise
+from grid import Grid,visualise,show_belief
 def normalize(belief):
     summation=0
     for value in belief.values():
@@ -45,6 +45,7 @@ class HMM:
         """
         Returns P(e_t+1|X_t+1)
         """
+        
         dist_N=self.grid.obsDistance_N(pos)
         dist_S=self.grid.obsDistance_S(pos)
         dist_W=self.grid.obsDistance_W(pos)
@@ -92,7 +93,6 @@ class HMM:
         estimated_state = max(self.belief, key= lambda x: self.belief[x])
         return estimated_state
 
-
 def viterbi(timesteps,hmm,obs,initial_state):
     all_states=hmm.all_states
     
@@ -123,6 +123,8 @@ def viterbi(timesteps,hmm,obs,initial_state):
         parent=dp[(parent,k)][1]
         estimated_path.append(parent)
     return estimated_path[::-1]
+
+
 if __name__ == '__main__':
     g=Grid(9,5,[(3,1),(3,2),(4,1),(4,2)])
     init_state=(1,3)
@@ -139,7 +141,12 @@ if __name__ == '__main__':
         obs.append(observation)        
         part_belief=filt_obj.dynamicsUpdate()
         filt_obj.measurementUpdate(part_belief,observation)
+        # 
+    show_belief(g,filt_obj.belief)
     print(robo.path)
     print(filt_obj.getStateEstimate())
-    print(viterbi(25,filt_obj,obs,init_state))
+    estimated_path=(viterbi(25,filt_obj,obs,init_state))
+    print(estimated_path)
+    visualise(g,robo.path)
+    visualise(g,estimated_path)
 
