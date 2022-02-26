@@ -1,6 +1,6 @@
 # COL-864: Special Topics in Artificial Intelligence Planning and Estimation for Autonomous Systems     
 ## Assignment-1    
-### Kalman Filtering and Task Planning    
+### State Estimation applied for localization using Kalman Filters ,EKF and HMM    
 
 #### Somanshu Singla(2018EE10314) and Lakshya Tangri(2018EE10222)
 
