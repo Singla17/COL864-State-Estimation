@@ -11,7 +11,7 @@ for filename in glob.glob('beliefs/*.png'):
     img_array.append(img)
  
  
-out = cv2.VideoWriter('project.avi',cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+out = cv2.VideoWriter('project.avi',cv2.VideoWriter_fourcc(*'DIVX'), 2, size)
  
 for i in range(len(img_array)):
     out.write(img_array[i])
