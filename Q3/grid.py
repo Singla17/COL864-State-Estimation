@@ -59,7 +59,7 @@ def show_belief(grid,belief,t=0):
     log_likelihood=np.zeros((grid.breadth,grid.length))
     for pos,prob in belief.items():
         x,y=pos
-        log_likelihood[y,x]=(prob)*255
+        log_likelihood[y,x]=(1-prob)*255
 
     ax.imshow(log_likelihood)  
 
