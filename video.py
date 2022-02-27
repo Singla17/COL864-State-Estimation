@@ -1,3 +1,4 @@
+# Taken from https://theailearner.com/2018/10/15/creating-video-from-images-using-opencv-python/
 import cv2
 import numpy as np
 import glob
