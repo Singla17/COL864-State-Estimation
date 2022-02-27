@@ -50,7 +50,7 @@ def visualise(grid,path=[]):
     plt.show()
         
         
-def show_belief(grid,belief):
+def show_belief(grid,belief,t=0):
     fig, ax = plt.subplots()
     plt.style.use('grayscale')
     plt.xlim(-0.5,grid.length-0.5)
@@ -63,7 +63,7 @@ def show_belief(grid,belief):
 
     ax.imshow(log_likelihood)  
 
-    plt.show()
+    plt.savefig(f"beliefs/{t}.png")
 
 class Grid():
     """

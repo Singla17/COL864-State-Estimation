@@ -133,23 +133,36 @@ def comparePaths(true_path,estimated_path):
 
 
 if __name__ == '__main__':
-    g=Grid(9,5,[(3,1),(3,2),(4,1),(4,2)])
-    init_state=(1,3)
+    np.random.seed(0)
+    length=20
+    breadth=20
+    num_obstacles=30
+    obstacles=set()
+    for i in range(num_obstacles):
+        x=np.random.randint(0,length)
+        y=np.random.randint(0,breadth)  
+        obstacles.add((x,y))
+    
+    g=Grid(20,20,list(obstacles))
+    x=np.random.randint(0,length)
+    y=np.random.randint(0,breadth)  
+    visualise(g)
+    init_state=(x,y)
+    print(init_state)    
     robo=Robot(init_state,5,g)
     filt_obj=HMM(robo)
     obs=[]
     
     observation=robo.getObservation()
     obs.append(observation)        
-        
-    for t in range(25):
+    show_belief(g,filt_obj.belief)
+    for t in range(1,26):
         robo.updateState()
         observation=robo.getObservation()
         obs.append(observation)        
         part_belief=filt_obj.dynamicsUpdate()
         filt_obj.measurementUpdate(part_belief,observation)
-        # 
-    show_belief(g,filt_obj.belief)
+        show_belief(g,filt_obj.belief,t)
     print(robo.path)
     print(filt_obj.getStateEstimate())
     estimated_path=(viterbi(25,filt_obj,obs,init_state))
