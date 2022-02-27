@@ -124,6 +124,13 @@ def viterbi(timesteps,hmm,obs,initial_state):
         estimated_path.append(parent)
     return estimated_path[::-1]
 
+def comparePaths(true_path,estimated_path):
+    dist=0
+    for p1,p2 in zip(true_path,estimated_path):
+        dist+=(abs(p1[0]-p2[0])+abs(p1[1]-p2[1]))
+
+    return dist
+
 
 if __name__ == '__main__':
     g=Grid(9,5,[(3,1),(3,2),(4,1),(4,2)])
@@ -149,4 +156,4 @@ if __name__ == '__main__':
     print(estimated_path)
     visualise(g,robo.path)
     visualise(g,estimated_path)
-
+    print(comparePaths(robo.path,estimated_path))
