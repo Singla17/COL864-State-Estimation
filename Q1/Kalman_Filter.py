@@ -144,15 +144,93 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     plt.ylabel("Y coordinate")
     fig.canvas.draw()
     plt.legend()
+    plt.savefig("figs/Q1/d.png")
     plt.show()
     
+def simulate_filter_vel(filter_obj,num_iters,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[]):
+    """
+    Simulates Kalman Filter for a given agent with initial state
+    """
+    x_state = []
+    y_state = []
+    x_obs = []
+    y_obs = []
+    x_estimated = []
+    y_estimated = []
+    
+    x_t = filter_obj.agent.getState()
+    z_t = filter_obj.agent.get_observation()
+    x_cap_t = filter_obj.mean_belief
+    
+    fig, ax = plt.subplots()
+    
+    if uncertainity_ellipse:
+        x_ellipse, y_ellipse,_,_ = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief), filter_obj.covar_belief, NUM_SAMPLES_ELLIPSE).T
+        confidence_ellipse(x_ellipse, y_ellipse, ax, edgecolor='yellow')
+     
+    x_state.append(x_t[2][0])
+    y_state.append(x_t[3][0])
+    x_obs.append(z_t[0][0])
+    y_obs.append(z_t[1][0])
+    x_estimated.append(x_cap_t[2][0])
+    y_estimated.append(x_cap_t[3][0])
+    
+    
+    basic_arr = np.arange(0,num_iters,1)
+    delta_vel_x = np.sin(basic_arr)
+    delta_vel_y = np.cos(basic_arr)
+    
+    
+    absence_of_observations = []
+        
+    if len(loss_locs)!=0:
+        for i in range(len(loss_locs)): 
+            duration = loss_durations[i]
+            location_of_loss = loss_locs[i]
+            
+            for j in range(duration):
+                absence_of_observations.append(location_of_loss+j)
+      
+    for i in range(num_iters):
+        u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T
+        filter_obj.agent.updateState(u_t)
+        filter_obj.updateBelief(u_t,not (i in absence_of_observations))
+        
+        x_t = filter_obj.agent.getState()
+        z_t = filter_obj.agent.get_observation()
+        x_cap_t = filter_obj.mean_belief
+        
+        if uncertainity_ellipse:
+            x_ellipse, y_ellipse,_,_ = np.random.multivariate_normal(np.squeeze(filter_obj.mean_belief), filter_obj.covar_belief, NUM_SAMPLES_ELLIPSE).T
+            confidence_ellipse(x_ellipse, y_ellipse, ax, edgecolor='yellow')
+        
+        x_state.append(x_t[2][0])
+        y_state.append(x_t[3][0])
+        x_obs.append(z_t[0][0])
+        y_obs.append(z_t[1][0])
+        x_estimated.append(x_cap_t[2][0])
+        y_estimated.append(x_cap_t[3][0])
+     
+    ax.set_title("Simulation")
+    
+    ax.plot(x_state, y_state, label = "Actual Velocity")
+    if observed_trajectory:
+        ax.plot(x_obs, y_obs, label = "Observed Trajectory")
+    ax.plot(x_estimated,y_estimated, label="Estimated Velocity")
+    
+    plt.xlabel("Velocity along x-axis")
+    plt.ylabel("Velocity along y-axis")
+    fig.canvas.draw()
+    plt.legend()
+    plt.savefig("figs/Q1/e_unequal_init.png")
+    plt.show()
 if __name__ == "__main__":
     from Agent import aeroplane    
     from utils import confidence_ellipse    
     np.random.seed(0)
     
     init_state = np.array([[0,0,10,10]]).T
-    A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
+    A_t = np.array([[1,0,DELTA_T,0],[0,1,0,DELTA_T],[0,0,1,0],[0,0,0,1]])
     B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
     C_t = np.array([[1,0,0,0],[0,1,0,0]])
     R_t = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
@@ -164,4 +242,4 @@ if __name__ == "__main__":
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
     simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[10,60],loss_durations=[20,20])
-
+    simulate_filter_vel(estimator,200,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[])

@@ -71,7 +71,7 @@ class Grid():
     obstacles is a list of tuples
     """
     
-    def __init__(self,Length,Breadth,obstacles,add_walls=False):
+    def __init__(self,Length,Breadth,obstacles,add_walls=True):
         """
         Initialisation of grid and obstacles
         """

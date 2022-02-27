@@ -50,10 +50,20 @@ class HMM:
         dist_W=self.grid.obsDistance_W(pos)
         dist_E=self.grid.obsDistance_E(pos)
         Rmax=self.robot.r_max
-        prob_N=1-((dist_N-1)/(Rmax-1)) if dist_N<Rmax else 0
-        prob_S=1-((dist_S-1)/(Rmax-1)) if dist_S<Rmax else 0
-        prob_E=1-((dist_E-1)/(Rmax-1)) if dist_E<Rmax else 0
-        prob_W=1-((dist_W-1)/(Rmax-1)) if dist_W<Rmax else 0
+        if Rmax==1:
+            prob_N=1 if dist_N==1 else 0
+            # dn=np.random.binomial(1,prob_N)
+            prob_S=1 if dist_S==1  else 0
+            # ds=np.random.binomial(1,prob_S)
+            prob_E=1 if dist_E==1  else 0
+            # de=np.random.binomial(1,prob_E)
+            prob_W=1 if dist_W==1 else 0
+            # dw=np.random.binomial(1,prob_W)
+        else:
+            prob_N=1-((dist_N-1)/(Rmax-1)) if dist_N<Rmax and Rmax !=1 else 0
+            prob_S=1-((dist_S-1)/(Rmax-1)) if dist_S<Rmax and Rmax !=1  else 0
+            prob_E=1-((dist_E-1)/(Rmax-1)) if dist_E<Rmax and Rmax !=1 else 0
+            prob_W=1-((dist_W-1)/(Rmax-1)) if dist_W<Rmax and Rmax !=1 else 0
         probs=(prob_N,prob_S,prob_E,prob_W)
         ans=1
         for evid,prob in zip(obs,probs):
@@ -152,20 +162,24 @@ if __name__ == '__main__':
     filt_obj=HMM(robo)
     obs=[]
     
+    current_pos_path=[init_state]
     observation=robo.getObservation()
     obs.append(observation)        
-    show_belief(g,filt_obj.belief)
+    # show_belief(g,filt_obj.belief)
     for t in range(1,26):
         robo.updateState()
         observation=robo.getObservation()
         obs.append(observation)        
         part_belief=filt_obj.dynamicsUpdate()
         filt_obj.measurementUpdate(part_belief,observation)
-        show_belief(g,filt_obj.belief,t)
+        current_pos_path.append(filt_obj.getStateEstimate())
+        # show_belief(g,filt_obj.belief,t)
     print(robo.path)
     print(filt_obj.getStateEstimate())
+    
     estimated_path=(viterbi(25,filt_obj,obs,init_state))
     print(estimated_path)
     visualise(g,robo.path)
     visualise(g,estimated_path)
     print(comparePaths(robo.path,estimated_path))
+    print(comparePaths(robo.path,current_pos_path))

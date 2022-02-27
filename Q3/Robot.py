@@ -51,15 +51,26 @@ class Robot:
         dist_W=self.grid.obsDistance_W(pos)
         dist_E=self.grid.obsDistance_E(pos)
         Rmax=self.r_max
-        prob_N=1-((dist_N-1)/(Rmax-1)) if dist_N<Rmax else 0
-        dn=np.random.binomial(1,prob_N)
-        prob_S=1-((dist_S-1)/(Rmax-1)) if dist_S<Rmax else 0
-        ds=np.random.binomial(1,prob_S)
-        prob_E=1-((dist_E-1)/(Rmax-1)) if dist_E<Rmax else 0
-        de=np.random.binomial(1,prob_E)
-        prob_W=1-((dist_W-1)/(Rmax-1)) if dist_W<Rmax else 0
-        dw=np.random.binomial(1,prob_W)
-        # print(prob_N,prob_S,prob_E,prob_W)
+        if Rmax==1:
+            prob_N=1 if dist_N==1 else 0
+            dn=np.random.binomial(1,prob_N)
+            prob_S=1 if dist_S==1  else 0
+            ds=np.random.binomial(1,prob_S)
+            prob_E=1 if dist_E==1  else 0
+            de=np.random.binomial(1,prob_E)
+            prob_W=1 if dist_W==1 else 0
+            dw=np.random.binomial(1,prob_W)
+            
+        else:
+            prob_N=1-((dist_N-1)/(Rmax-1)) if dist_N<Rmax and Rmax !=1 else 0
+            dn=np.random.binomial(1,prob_N)
+            prob_S=1-((dist_S-1)/(Rmax-1)) if dist_S<Rmax and Rmax !=1 else 0
+            ds=np.random.binomial(1,prob_S)
+            prob_E=1-((dist_E-1)/(Rmax-1)) if dist_E<Rmax and Rmax !=1 else 0
+            de=np.random.binomial(1,prob_E)
+            prob_W=1-((dist_W-1)/(Rmax-1)) if dist_W<Rmax and Rmax !=1 else 0
+            dw=np.random.binomial(1,prob_W)
+            # print(prob_N,prob_S,prob_E,prob_W)
         return (dn,ds,de,dw)
 
     

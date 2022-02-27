@@ -11,7 +11,7 @@ from Q1.Kalman_Filter import KalmanFilter
 from EKF import ExtendedKalmanFilter
 from LandmarkBasedAgent import modAeroplane
 from Q1.utils import confidence_ellipse
-DELTA_T=1
+DELTA_T=1.0
 NUM_SAMPLES_ELLIPSE= 5000
 class MixedFilter():
     def __init__(self,agent,mean_belief,covar_belief):
@@ -79,9 +79,13 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=True):
     y_estimated.append(x_cap_t[1][0])
     
     
+    basic_arr = np.arange(0,num_iters,1)
+    delta_vel_x = np.sin(basic_arr)
+    delta_vel_y = np.cos(basic_arr)
     
     for i in range(num_iters):
-        u_t = np.zeros((2,1))
+        u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T #u_t
+        
         filter_obj.agent.updateState(u_t)
         filter_obj.updateBelief(u_t)
         
@@ -101,11 +105,11 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=True):
         x_estimated.append(x_cap_t[0][0])
         y_estimated.append(x_cap_t[1][0])
      
-    ax.set_title("Simulation")
+    ax.set_title("Simulation with Landmarks")
     
     ax.plot(x_state, y_state, label = "Actual Trajectory")
     # if observed_trajectory:
-    ax.plot(x_obs, y_obs, label = "Observed Trajectory")
+    # ax.plot(x_obs, y_obs, label = "Observed Trajectory")
     ax.plot(x_estimated,y_estimated, label="Estimated Trajectory")
     
     plt.xlabel("X coordinate")
@@ -113,9 +117,10 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=True):
     fig.canvas.draw()
     plt.legend()
     plt.show()
+    # plt.savefig("figs/Q2/c_extra_landmark.png")
 if __name__ == '__main__':
-    init_state = np.array([[0,0,4*math.cos(0.3),4*math.sin(0.3)]]).T
-    A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
+    init_state = np.array([[30,-70,4*math.cos(0.3),4*math.sin(0.3)]]).T
+    A_t = np.array([[1,0,DELTA_T,0],[0,1,0,DELTA_T],[0,0,1,0],[0,0,0,1]])
     B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
     C_t = np.array([[1,0,0,0],[0,1,0,0]])
     R_t = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
@@ -123,10 +128,11 @@ if __name__ == '__main__':
     
    
     landmarks=[np.array([0,0])[:,np.newaxis],np.array([100,100])[:,np.newaxis],np.array([-100,100])[:,np.newaxis],np.array([100,-100])[:,np.newaxis],np.array([-100,-100])[:,np.newaxis]]
+    landmarks.append(np.array([200,-25])[:,np.newaxis])
     aero_obj = modAeroplane(init_state,A_t,B_t,C_t,R_t,Q_t,landmarks,30,1)
 
 
-    mean_belief_0 = np.array([[4,-5,1,2]]).T
+    mean_belief_0 = np.array([[25,-75,1,2]]).T
     covar_belief_0 = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
     num_iters=100
     estimator=MixedFilter(aero_obj,mean_belief_0,covar_belief_0)

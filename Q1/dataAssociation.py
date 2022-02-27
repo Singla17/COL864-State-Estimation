@@ -37,9 +37,10 @@ def multiagent_simulate(kf_filters,num_iters):
         x_estimated[i].append(x_cap_t[i][0][0])
         y_estimated[i].append(x_cap_t[i][1][0])
 
-    basic_arr = np.zeros((num_iters))
-    delta_vel_x = basic_arr 
-    delta_vel_y = basic_arr
+
+    basic_arr = np.arange(0,num_iters,1)
+    delta_vel_x = np.sin(basic_arr)
+    delta_vel_y = np.cos(basic_arr)
     # ith iteration ke end me hummein X_i+1 ki beleif mil jaata hai using u_i,X^_i,z_i+1
     for i in range(num_iters):
         u_t = np.array([[delta_vel_x[i],delta_vel_y[i]]]).T #u_t
@@ -82,39 +83,66 @@ def multiagent_simulate(kf_filters,num_iters):
     plt.ylabel("Y coordinate")
     fig.canvas.draw()
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig("figs/Q1/f_4_agents.png")
 
 if __name__ == '__main__':
     np.random.seed(0)
     
-    init_state_a = np.array([[0,0,10,10]]).T
-    A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
+    init_state_a = np.array([[0,0,5,10]]).T
+    A_t = np.array([[1,0,DELTA_T,0],[0,1,0,DELTA_T],[0,0,1,0],[0,0,0,1]])
     B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
     C_t = np.array([[1,0,0,0],[0,1,0,0]])
     R_t_a = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     Q_t_a= np.array([[100,0],[0,100]]) 
     
-    mean_belief_0_a = np.array([[0,0,9,11]]).T
+    mean_belief_0_a = np.array([[0,0,5,10]]).T
     covar_belief_0_a = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     
     aero_obj_a = aeroplane(init_state_a,A_t,B_t,C_t,R_t_a,Q_t_a)
     estimator_a = KalmanFilter(aero_obj_a, mean_belief_0_a, covar_belief_0_a)
 
 
-    init_state_b = np.array([[20,0,15,7.5]]).T
-    A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
-    B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
-    C_t = np.array([[1,0,0,0],[0,1,0,0]])
+    init_state_b = np.array([[10,20,1,20]]).T
     R_t_b = np.array([[2,0,0,0],[0,2,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     Q_t_b = np.array([[10,0],[0,10]]) 
     
-    mean_belief_0_b = np.array([[20,0,12,5]]).T
+    mean_belief_0_b = np.array([[10,20,1,21]]).T
     covar_belief_0_b = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     
     aero_obj_b = aeroplane(init_state_b,A_t,B_t,C_t,R_t_b,Q_t_b)
     estimator_b = KalmanFilter(aero_obj_b, mean_belief_0_b, covar_belief_0_b)
     
-    estimators=[estimator_a,estimator_b]
+    init_state_c = np.array([[100,120,18,9]]).T
+    # A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
+    # B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
+    # C_t = np.array([[1,0,0,0],[0,1,0,0]])
+    R_t_c = np.array([[2,0,0,0],[0,2,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
+    Q_t_c = np.array([[10,0],[0,10]]) 
+    
+    mean_belief_0_c = np.array([[100,120,18,9]]).T
+    covar_belief_0_c = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
+    
+    aero_obj_c = aeroplane(init_state_c,A_t,B_t,C_t,R_t_c,Q_t_c)
+    estimator_c = KalmanFilter(aero_obj_c, mean_belief_0_c, covar_belief_0_c)
+    
+    init_state_d = np.array([[100,20,50,0]]).T
+    # A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
+    # /# B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
+    # C_t = np.array([[1,0,0,0],[0,1,0,0]])
+    R_t_d = np.array([[5,0,0,0],[0,5,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
+    Q_t_d = np.array([[10,0],[0,10]]) 
+    
+    mean_belief_0_d = np.array([[100,20,50,0]]).T
+    covar_belief_0_d = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
+    
+    aero_obj_d= aeroplane(init_state_d,A_t,B_t,C_t,R_t_d,Q_t_d)
+    estimator_d = KalmanFilter(aero_obj_d, mean_belief_0_d, covar_belief_0_d)
+    
+
+    
+    
+    estimators=[estimator_a,estimator_b,estimator_c,estimator_d]
     multiagent_simulate(estimators,200)
 
     # pass

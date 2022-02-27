@@ -76,14 +76,15 @@ def simulate(aero_obj,u_t,num_iters):
     plt.plot(x_state, y_state, label = "Actual Trajectory")
     plt.plot(x_obs, y_obs, label = "Observed Trajectory")
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig('figs/Q1/a.png')
 
 if __name__ =="__main__":
     
     np.random.seed(0)
     
     initial_state = np.array([[0,0,10,10]]).T
-    A_t = np.array([[1,0,DELTA_T,0],[0,1,DELTA_T,0],[0,0,1,0],[0,0,0,1]])
+    A_t = np.array([[1,0,DELTA_T,0],[0,1,0,DELTA_T],[0,0,1,0],[0,0,0,1]])
     B_t = np.array([[0,0],[0,0],[1,0],[0,1]])
     C_t = np.array([[1,0,0,0],[0,1,0,0]])
     R_t = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
