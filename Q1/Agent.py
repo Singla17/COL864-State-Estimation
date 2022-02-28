@@ -89,6 +89,7 @@ if __name__ =="__main__":
     C_t = np.array([[1,0,0,0],[0,1,0,0]])
     R_t = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     Q_t = np.array([[100,0],[0,100]]) 
+    
     u_t = np.array([[0,0]]).T
     
     aero_obj = aeroplane(initial_state,A_t,B_t,C_t,R_t,Q_t)

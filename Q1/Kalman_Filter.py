@@ -144,7 +144,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     plt.ylabel("Y coordinate")
     fig.canvas.draw()
     plt.legend()
-    plt.savefig("figs/Q1/d.png")
+    plt.savefig("figs/Q1/c.png")
     plt.show()
     
 def simulate_filter_vel(filter_obj,num_iters,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[]):
@@ -175,10 +175,10 @@ def simulate_filter_vel(filter_obj,num_iters,uncertainity_ellipse=False,observed
     x_estimated.append(x_cap_t[2][0])
     y_estimated.append(x_cap_t[3][0])
     
-    
     basic_arr = np.arange(0,num_iters,1)
-    delta_vel_x = np.sin(basic_arr)
-    delta_vel_y = np.cos(basic_arr)
+    delta_vel_x = np.sin(basic_arr*DELTA_T)
+    delta_vel_y = np.cos(basic_arr*DELTA_T)
+    
     
     
     absence_of_observations = []
@@ -222,7 +222,7 @@ def simulate_filter_vel(filter_obj,num_iters,uncertainity_ellipse=False,observed
     plt.ylabel("Velocity along y-axis")
     fig.canvas.draw()
     plt.legend()
-    plt.savefig("figs/Q1/e_unequal_init.png")
+    plt.savefig("figs/Q1/e_equal_init.png")
     plt.show()
 if __name__ == "__main__":
     from Agent import aeroplane    
@@ -236,10 +236,10 @@ if __name__ == "__main__":
     R_t = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     Q_t = np.array([[100,0],[0,100]]) 
     
-    mean_belief_0 = np.array([[0,0,0,0]]).T
+    mean_belief_0 = np.array([[0,0,10,10]]).T
     covar_belief_0 = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
-    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[10,60],loss_durations=[20,20])
-    simulate_filter_vel(estimator,200,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[])
+    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[],loss_durations=[])
+    # simulate_filter_vel(estimator,200,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[])
