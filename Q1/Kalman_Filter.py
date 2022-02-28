@@ -144,7 +144,7 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     plt.ylabel("Y coordinate")
     fig.canvas.draw()
     plt.legend()
-    plt.savefig("figs/Q1/c_obs.png")
+    plt.savefig("figs/Q1/d.png")
     plt.show()
     
 def simulate_filter_vel(filter_obj,num_iters,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[]):
@@ -236,10 +236,10 @@ if __name__ == "__main__":
     R_t = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     Q_t = np.array([[100,0],[0,100]]) 
     
-    mean_belief_0 = np.array([[0,0,10,10]]).T
+    mean_belief_0 = np.array([[0,0,0,0]]).T
     covar_belief_0 = np.array([[1e-4,0,0,0],[0,1e-4,0,0],[0,0,1e-4,0],[0,0,0,1e-4]])
     
     aero_obj = aeroplane(init_state,A_t,B_t,C_t,R_t,Q_t)
     estimator = KalmanFilter(aero_obj, mean_belief_0, covar_belief_0)
-    simulate_filter(estimator,200,uncertainity_ellipse=False,observed_trajectory=True,loss_locs=[],loss_durations=[])
+    simulate_filter(estimator,200,uncertainity_ellipse=True,observed_trajectory=False,loss_locs=[10,60],loss_durations=[20,20])
     # simulate_filter_vel(estimator,200,uncertainity_ellipse=False,observed_trajectory=False,loss_locs=[],loss_durations=[])

@@ -4,7 +4,7 @@ from matplotlib.patches import Rectangle
 import math
 NO_OBS_DIST = 1e6
 
-def visualise(grid,path=[]):
+def visualise(grid,path=[],est=-1):
     """
     This functions renders the grid plot, where obstacles are shown in gray
     path : list of tuples (x,y) expressing path taken by robot
@@ -45,8 +45,8 @@ def visualise(grid,path=[]):
             y_pts=[prev_pos[1],pos[1]]
             plt.plot(x_pts,y_pts,color='b')
 
-    
-
+    name={1:"estimated",0:"actual",-1:"maze"}
+    plt.savefig(f"3_e_{name[est]}.png")
     plt.show()
         
         
