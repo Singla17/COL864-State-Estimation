@@ -99,8 +99,8 @@ def simulate_filter(filter_obj,num_iters,uncertainity_ellipse=False,observed_tra
     
     
     basic_arr = np.arange(0,num_iters,1)
-    delta_vel_x = np.sin(basic_arr)
-    delta_vel_y = np.cos(basic_arr)
+    delta_vel_x = np.sin(basic_arr*DELTA_T)
+    delta_vel_y = np.cos(basic_arr*DELTA_T)
     
     
     absence_of_observations = []
